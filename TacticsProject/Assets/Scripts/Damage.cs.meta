@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: e6f1eb3d023e1ad408919d888e06c1a0
+timeCreated: 1443045550
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - CombatFloatText: {fileID: 179642, guid: ea21bac53e6599349b42896c19d9683a, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
