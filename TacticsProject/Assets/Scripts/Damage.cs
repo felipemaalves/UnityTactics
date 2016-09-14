@@ -8,20 +8,27 @@ public enum Element
 	WATER,
 	LIGHTNING,
 	EARTH,
-	AIR
+	AIR,
+    HOLY,
+    DARK,
+    POISON
 }
 
 public enum DamageType 
 {
 	PIERCE,
 	CONTUSION,
-	SLICE,
-	MAGIC
+	SLASH,
+	MAGIC,
+    MIND,
+    SOUND,
+    TRUE
 };
 
 public class Damage {
 
 	public DamageType damageType;
+    public Element damageElement;
 	public int damage;
 
 	public Damage(){
@@ -40,6 +47,7 @@ public class Damage {
 	public static void doDamageTo(Player target, int dmg, DamageType dmgType ){
 		dmg = Mathf.FloorToInt (dmg * (1 + target.damageReduction));
 		target.HP -= dmg;
+
 		displayDamage (target, dmg);
 	}
 

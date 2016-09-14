@@ -62,8 +62,8 @@ public class Tile : MonoBehaviour {
 
 		transform.GetComponent<Renderer> ().material.color = overlapColor;
 
-		//GetMouseButtonDown(1) right mouse button
-		if (Input.GetMouseButtonDown (1)) {
+		//GetMouseButtonDown(1) right mouse button (testar IMPASSABLE)
+		/*if (Input.GetMouseButtonDown (1)) {
 			if (!impassable) {
 				impassable = true;
 				transform.GetComponent<Renderer> ().material = surfacesMaterials [1];
@@ -71,18 +71,18 @@ public class Tile : MonoBehaviour {
 				impassable = false;
 				transform.GetComponent<Renderer> ().material = surfacesMaterials [0];
 			}
-		}
+		}*/
 	}
 
 	public void OnMouseExit () {
 		transform.GetComponent<Renderer> ().material.color = previousColor;	
 	}
 
-	void OnMouseDown () {
+	public void OnMouseDown () {
 		Player instancePlayer = GameManager.instance.players [GameManager.instance.currentPlayerIndex];
 
 		if (instancePlayer.movingPhase && instancePlayer.movePoints > 0) {
-			GameManager.instance.moveCurrentPlayer (this);
+			instancePlayer.movePlayer (this);
 		} else if (instancePlayer.attackingPhase && instancePlayer.actionPoints > 0) {;
 			GameManager.instance.attackWithCurrentPlayer (this);
 		}

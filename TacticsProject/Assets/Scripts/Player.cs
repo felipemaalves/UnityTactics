@@ -51,10 +51,7 @@ public class Player : MonoBehaviour {
 		} else {
 			transform.GetComponent<Renderer> ().material.color = Color.white;
 		}
-		if (HP < 0) {
-			HP = 0;
-		}
-		if (HP == 0) {
+		if (HP <= 0) {
 			transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
 			transform.GetComponent<Renderer> ().material.color = Color.red;
 		}
@@ -62,25 +59,22 @@ public class Player : MonoBehaviour {
 
 	void OnMouseOver(){
 		mouseOverPlayer = true;
-		GameManager.instance.getTileByGridPosition (gridPosition).OnMouseOver ();
+		this.getTile().OnMouseOver ();
 	}
 
 	void OnMouseExit(){
-		GameManager.instance.removeTileHighlights ();
-		if (GameManager.instance.players [GameManager.instance.currentPlayerIndex].attackingPhase) {
-			GameManager.instance.players [GameManager.instance.currentPlayerIndex].startAttackPhase();
-		} else if (GameManager.instance.players [GameManager.instance.currentPlayerIndex].movingPhase) {
-			GameManager.instance.players [GameManager.instance.currentPlayerIndex].startMovePhase();
+		GameManager.instance.removeMapHighlights ();
+		if (this.attackingPhase) {
+            this.startAttackPhase();
+		} else if (this.movingPhase) {
+            this.startMovePhase();
 		}
 		mouseOverPlayer = false;
-		GameManager.instance.getTileByGridPosition (gridPosition).OnMouseExit ();
+		this.getTile().OnMouseExit ();
 	}
 
 	void OnMouseDown(){
-		Player instancePlayer = GameManager.instance.players [GameManager.instance.currentPlayerIndex];
-		if (instancePlayer.attackingPhase && instancePlayer.actionPoints > 0) {;
-			GameManager.instance.attackWithCurrentPlayer(GameManager.instance.getTileByGridPosition(gridPosition));
-		}
+        this.getTile().OnMouseDown();
 	}
 
 	public virtual void OnGUI(){
@@ -115,21 +109,21 @@ public class Player : MonoBehaviour {
 	}
 
 	public void startMovePhase(){
-		GameManager.instance.removeTileHighlights();
+		GameManager.instance.removeMapHighlights();
 		movingPhase = true;
 		attackingPhase = false;
 		GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetMoveColor, GameManager.instance.players [GameManager.instance.currentPlayerIndex].movePoints);
 	}
 
 	public void startAttackPhase(){
-		GameManager.instance.removeTileHighlights();
+		GameManager.instance.removeMapHighlights();
 		movingPhase = false;
 		attackingPhase = true;
 		GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetAttackColor, GameManager.instance.players [GameManager.instance.currentPlayerIndex].attackRange);
 	}
 
 	public virtual void endPlayerTurn(){
-		GameManager.instance.removeTileHighlights();
+		GameManager.instance.removeMapHighlights();
 		RefreshPoints();
 		positionQueue.Clear();
 		movingPhase = false;
@@ -166,109 +160,163 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	public Tile getPlayerTile(){
-		return GameManager.instance.getTileByGridPosition (gridPosition);
-	}
+    public virtual void movePlayer(Tile destTile){
+        if (this.gridPosition != destTile.gridPosition && !destTile.impassable)
+        {
+            foreach (Tile t in TilePathFinder.FindPath(this.getTile(), destTile))
+            {
+                this.positionQueue.Add(t.transform.position + GameManager.offsetHigh);
+                destTile = t;
+                if (this.positionQueue.Count >= this.startingMovePoints)
+                {
+                    break;
+                }
+            }
+            this.gridPosition = destTile.gridPosition;
+        }
+    }
 
-	public void setPlayerPositionPassable(){
-		GameManager.instance.getTileByGridPosition (gridPosition).impassable = false;
-	}
+    public void doDamageTo(Player target)
+    {
+        int amountOfDamage = this.damageBase + Random.Range(1, this.damageRollSides);
+        Damage damage = new Damage(amountOfDamage, DamageType.CONTUSION);
+        Damage.doDamageTo(target, damage);
+    }
 
-	public void setPlayerPositionImpassable(){
-		GameManager.instance.getTileByGridPosition(gridPosition).impassable = true;
-	}
+    public void attackWithEquipedWeapon(Tile destTile){
+    }
 
-	public Player getPriorityTarget( List<Tile> tilesOfOpponentsInRange){
-		/* PriorityTarget
-		 * 	1- Lowest HP
-		 *  2- Closest Player
-		 */
-		Player targetPlayer = null;
-		int lowestHP = 0;
-		if (tilesOfOpponentsInRange.Count == 0) {
-			return targetPlayer;
-		} else {
-			foreach(Tile t in tilesOfOpponentsInRange)
-			{
-				if( targetPlayer == null) {
-					targetPlayer = GameManager.instance.getPlayerByTile(t);
-				} else if(targetPlayer.HP > GameManager.instance.getPlayerByTile(t).HP){
-					targetPlayer = GameManager.instance.getPlayerByTile(t);
-					lowestHP = targetPlayer.HP;
-				} else if((targetPlayer.HP == GameManager.instance.getPlayerByTile(t).HP) && targetPlayer.HP <= lowestHP){
-					List<Player> opponentsWithSameHP = new List<Player>();
-					foreach (Tile tile in tilesOfOpponentsInRange){
-						if(targetPlayer.HP == GameManager.instance.getPlayerByTile(tile).HP){
-							opponentsWithSameHP.Add(GameManager.instance.getPlayerByTile(tile));
-						}
-						targetPlayer = getClosestPlayer(opponentsWithSameHP);
-					}
-				}
-			}
-		}
-		return targetPlayer;
-	}
+    public Tile getTile()
+    {
+        return GameManager.instance.getTileByGridPosition(gridPosition);
+    }
 
-	public Player getClosestPlayer(List<Player> players){
-		Player closest = null;
-		int distance = -1;
-		foreach(Player p in players){
-			if (p == this) continue;
-			if (p.HP <= 0) continue;
-			if (this.GetType() == p.GetType()) continue;
-			if (distance > 0) {
-				if(GameManager.getDistanceByTiles(this.getPlayerTile(),p.getPlayerTile()) < distance) {
-					distance = GameManager.getDistanceByTiles(this.getPlayerTile(),p.getPlayerTile());
-					closest = p;
-				}
-			} else {
-				distance = GameManager.getDistanceByTiles(this.getPlayerTile(),p.getPlayerTile());
-				closest = p;
-			}
-		}
-		return closest;
-	}
-	
-	public void moveToAttackRange(Player target){
-		Tile destTile =  target.getPlayerTile().neighbors[0];
-		foreach (Tile t in target.getPlayerTile().neighbors) {
-			if( Vector3.Distance(transform.position, t.transform.position) < Vector3.Distance(transform.position,destTile.transform.position)){
-				destTile = t;
-			}
-		}
-		List<Tile> tiles = TilePathFinder.FindPath (getPlayerTile (), destTile);
-		for(int i=1; i < this.attackRange; i++) {
-			tiles.RemoveAt(tiles.Count-1);
-		}
-		destTile = tiles[tiles.Count-1];
-		GameManager.instance.moveCurrentPlayer (destTile);
-	}
-	
-	public void moveToClosestPositionFromOpponent(Player target){
-		Tile destTile =  target.getPlayerTile().neighbors[0];
-		foreach (Tile t in target.getPlayerTile().neighbors) {
-			if( Vector3.Distance(transform.position, t.transform.position) < Vector3.Distance(transform.position,destTile.transform.position)){
-				destTile = t;
-			}
-		}
-		GameManager.instance.moveCurrentPlayer (destTile);
-	}
+    public void setPlayerPositionPassable()
+    {
+        GameManager.instance.getTileByGridPosition(gridPosition).impassable = false;
+    }
 
-	public void moveToFartherPositionFromOpponent(Player target){
-		List<Tile> highlightedTiles = TileHighligth.FindHighlight (getPlayerTile (), movePoints);
-		Tile destTile =  getPlayerTile();
-		foreach (Tile t in highlightedTiles) {
-			if( Vector3.Distance(target.transform.position, t.transform.position) > Vector3.Distance(target.transform.position,destTile.transform.position)){
-				destTile = t;
-			}
-		}
-		GameManager.instance.moveCurrentPlayer (destTile);
-	}
+    public void setPlayerPositionImpassable()
+    {
+        GameManager.instance.getTileByGridPosition(gridPosition).impassable = true;
+    }
 
-	public void doDamageTo(Player target){
-		int amountOfDamage = this.damageBase + Random.Range(1,this.damageRollSides);
-		Damage damage = new Damage(amountOfDamage,DamageType.CONTUSION);
-		Damage.doDamageTo (target, damage);
-	}
+    /*
+     * AI Auxiliary functions
+     */
+
+    public Player getPriorityTarget(List<Tile> tilesOfOpponentsInRange)
+    {
+        /* PriorityTarget
+         * 	1- Lowest HP
+         *  2- Closest Player
+         */
+        Player targetPlayer = null;
+        int lowestHP = 0;
+        if (tilesOfOpponentsInRange.Count == 0)
+        {
+            return targetPlayer;
+        }
+        else
+        {
+            foreach (Tile t in tilesOfOpponentsInRange)
+            {
+                if (targetPlayer == null)
+                {
+                    targetPlayer = GameManager.instance.getPlayerByTile(t);
+                }
+                else if (targetPlayer.HP > GameManager.instance.getPlayerByTile(t).HP)
+                {
+                    targetPlayer = GameManager.instance.getPlayerByTile(t);
+                    lowestHP = targetPlayer.HP;
+                }
+                else if ((targetPlayer.HP == GameManager.instance.getPlayerByTile(t).HP) && targetPlayer.HP <= lowestHP)
+                {
+                    List<Player> opponentsWithSameHP = new List<Player>();
+                    foreach (Tile tile in tilesOfOpponentsInRange)
+                    {
+                        if (targetPlayer.HP == GameManager.instance.getPlayerByTile(tile).HP)
+                        {
+                            opponentsWithSameHP.Add(GameManager.instance.getPlayerByTile(tile));
+                        }
+                        targetPlayer = getClosestPlayer(opponentsWithSameHP);
+                    }
+                }
+            }
+        }
+        return targetPlayer;
+    }
+
+    public Player getClosestPlayer(List<Player> players)
+    {
+        Player closest = null;
+        int distance = -1;
+        foreach (Player p in players)
+        {
+            if (p == this) continue;
+            if (p.HP <= 0) continue;
+            if (this.GetType() == p.GetType()) continue;
+            if (distance > 0)
+            {
+                if (GameManager.getDistanceByTiles(this.getTile(), p.getTile()) < distance)
+                {
+                    distance = GameManager.getDistanceByTiles(this.getTile(), p.getTile());
+                    closest = p;
+                }
+            }
+            else
+            {
+                distance = GameManager.getDistanceByTiles(this.getTile(), p.getTile());
+                closest = p;
+            }
+        }
+        return closest;
+    }
+
+    public void moveToAttackRange(Player target)
+    {
+        Tile destTile = target.getTile().neighbors[0];
+        foreach (Tile t in target.getTile().neighbors)
+        {
+            if (Vector3.Distance(transform.position, t.transform.position) < Vector3.Distance(transform.position, destTile.transform.position))
+            {
+                destTile = t;
+            }
+        }
+        List<Tile> tiles = TilePathFinder.FindPath(getTile(), destTile);
+        for (int i = 1; i < this.attackRange; i++)
+        {
+            tiles.RemoveAt(tiles.Count - 1);
+        }
+        destTile = tiles[tiles.Count - 1];
+        movePlayer(destTile);
+    }
+
+    public void moveToClosestPositionFromOpponent(Player target)
+    {
+        Tile destTile = target.getTile().neighbors[0];
+        foreach (Tile t in target.getTile().neighbors)
+        {
+            if (Vector3.Distance(transform.position, t.transform.position) < Vector3.Distance(transform.position, destTile.transform.position))
+            {
+                destTile = t;
+            }
+        }
+        movePlayer(destTile);
+    }
+
+    public void moveToFartherPositionFromOpponent(Player target)
+    {
+        List<Tile> highlightedTiles = TileHighligth.FindHighlight(getTile(), movePoints);
+        Tile destTile = getTile();
+        foreach (Tile t in highlightedTiles)
+        {
+            if (Vector3.Distance(target.transform.position, t.transform.position) > Vector3.Distance(target.transform.position, destTile.transform.position))
+            {
+                destTile = t;
+            }
+        }
+        movePlayer(destTile);
+    }
 
 }

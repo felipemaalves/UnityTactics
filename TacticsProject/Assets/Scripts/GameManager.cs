@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour {
 	public static Color targetSplashColor = new Color(0.85f,0.23f,0.23f);
 	public static Color targetMoveColor = new Color (0.33f, 0.835f, 1.0f);
 
+    public static Vector3 offsetHigh = 1.5f * Vector3.up;
+
 	public GameObject TilePreFab;
 	public GameObject UserPlayerPreFab;
 	public GameObject AIPlayerPreFab;
@@ -37,8 +39,11 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        Debug.Log("Inicializing map...");
 		generateMap ();
-		generatePlayers ();	
+        Debug.Log("Inicializing Players...");
+		generatePlayers ();
+        Debug.Log("Ajusting camera...");
 		adjustCamera ();
 	}
 	
@@ -86,7 +91,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void removeTileHighlights(){
+	public void removeMapHighlights(){
 		for (int i=0; i < mapSizeX; i++) {
 			for (int j=0; j < mapSizeY; j++){
 				map[i][j].transform.GetComponent<Renderer>().material.color = Color.white;
@@ -95,25 +100,10 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void moveCurrentPlayer( Tile destTile) {
-		if ((destTile.transform.GetComponent<Renderer> ().material.color != Color.white && destTile.transform.GetComponent<Renderer> ().material.color != mouseOverColor) || (players[currentPlayerIndex].GetType() == typeof(AIPlayer))) {
-			if (players [currentPlayerIndex].gridPosition != destTile.gridPosition && !destTile.impassable) {
-				foreach(Tile t in TilePathFinder.FindPath(map[(int)players[currentPlayerIndex].gridPosition.x][(int)players[currentPlayerIndex].gridPosition.y],destTile)){
-					players[currentPlayerIndex].positionQueue.Add(map[(int)t.gridPosition.x][(int)t.gridPosition.y].transform.position + 1.5f * Vector3.up);
-					destTile = t;
-					if( players[currentPlayerIndex].positionQueue.Count >= players[currentPlayerIndex].startingMovePoints){
-						break;
-					}
-				}
-				players [currentPlayerIndex].gridPosition = destTile.gridPosition;
-			}
-		} else {
-			Debug.Log("Destination invalid");
-		}
-	}
-
 	public void attackWithCurrentPlayer(Tile destTile) {
-		if ((destTile.transform.GetComponent<Renderer> ().material.color != Color.white && destTile.transform.GetComponent<Renderer> ().material.color != mouseOverColor) || (players[currentPlayerIndex].GetType() == typeof(AIPlayer))) {
+        Color destTileMatColor = destTile.transform.GetComponent<Renderer>().material.color;
+        if ((destTileMatColor != Color.white && destTileMatColor != mouseOverColor) || (players[currentPlayerIndex].GetType() == typeof(AIPlayer)))
+        {
 			Player target = null;
 			foreach (Player p in players) {
 				if(p.gridPosition == destTile.gridPosition) {
@@ -181,7 +171,7 @@ public class GameManager : MonoBehaviour {
 	public List<Tile> findPlayersByTile(){
 		List<Tile> tiles = new List<Tile> ();
 		foreach (Player p in players) {
-			tiles.Add(p.getPlayerTile());
+			tiles.Add(p.getTile());
 		}
 		return tiles;
 	}
@@ -189,7 +179,7 @@ public class GameManager : MonoBehaviour {
 	public List<Tile> findLivePlayersByTile(){
 		List<Tile> tiles = new List<Tile> ();
 		foreach (Player p in players) {
-			if(p.HP > 0) tiles.Add(p.getPlayerTile());
+			if(p.HP > 0) tiles.Add(p.getTile());
 		}
 		return tiles;
 	}

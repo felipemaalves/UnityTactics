@@ -31,7 +31,7 @@ public class AIPlayer : Player {
 				}
 			}
 
-			List<Tile> highlightedInRange = TileHighligth.FindAttackHighlight(getPlayerTile(),attackRange);
+			List<Tile> highlightedInRange = TileHighligth.FindAttackHighlight(getTile(),attackRange);
 			List<Tile> tilesOfTargetsInAttackRange = new List<Tile>();
 
 			foreach(Tile tile in playersTile){
@@ -123,7 +123,7 @@ public class AIPlayer : Player {
 		foreach(Player p in GameManager.instance.players){
 			p.setPlayerPositionPassable();
 		}
-		highLightedTiles = TileHighligth.FindHighlight(getPlayerTile(),movePoints + attackRange,false, movePoints);
+		highLightedTiles = TileHighligth.FindHighlight(getTile(),movePoints + attackRange,false, movePoints);
 		foreach(Player p in GameManager.instance.players){
 			if( p != this ) p.setPlayerPositionImpassable();
 		}

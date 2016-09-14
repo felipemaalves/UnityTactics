@@ -6,7 +6,7 @@ public class UserPlayer : Player {
 	public override void TurnUpdate ()
 	{
 		if(Input.GetMouseButtonDown(1) || Input.GetButtonDown("Cancel")){
-			GameManager.instance.removeTileHighlights();
+			GameManager.instance.removeMapHighlights();
 			positionQueue.Clear();
 			highlighted = false;
 			movingPhase = false;
@@ -15,7 +15,7 @@ public class UserPlayer : Player {
 		}
 		if (positionQueue.Count > 0 && movePoints > 0) {
 			updatePositionQueue();
-			GameManager.instance.removeTileHighlights();
+			GameManager.instance.removeMapHighlights();
 			highlighted = false;
 		} else if(movingPhase && !highlighted){
 			GameManager.instance.highlightTilesAt(gridPosition,new Color(0.33f,0.835f,1.0f),movePoints);
@@ -62,4 +62,18 @@ public class UserPlayer : Player {
 
 		base.TurnOnGUI ();
 	}
+
+    public override void movePlayer(Tile destTile)
+    {
+        Color destTileMatColor = destTile.transform.GetComponent<Renderer>().material.color;
+
+        if ((destTileMatColor != Color.white && destTileMatColor != GameManager.mouseOverColor))
+        {
+            base.movePlayer(destTile);
+        }
+        else
+        {
+            Debug.Log("Destination invalid");
+        }
+    }
 }
