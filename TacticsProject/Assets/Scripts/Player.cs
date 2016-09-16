@@ -6,7 +6,7 @@ public class Player : MonoBehaviour {
 	public Vector2 gridPosition = Vector2.zero;
 
 	public Vector3 moveDestination;
-	public float moveSpeed = 10.0f;
+	public float moveSpeed = 0.1f;
 
 	public bool attackingPhase = false;
 	public bool movingPhase = false;
@@ -29,7 +29,7 @@ public class Player : MonoBehaviour {
 	public int startingActionPoints = 2;
 	public int startingMovePoints = 5;
 
-    private Attribute attributes;
+    private Attribute attributes = new Attribute();
 
 	//movement animation
 	public List<Vector3> positionQueue = new List<Vector3>();
@@ -45,7 +45,9 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		HP = MaxHP;
+		this.HP = this.MaxHP;
+        this.attributes = new Attribute();
+        this.moveSpeed = 0.25f;
 	}
 	
 	// Update is called once per frame
@@ -68,10 +70,11 @@ public class Player : MonoBehaviour {
 
 	void OnMouseExit(){
 		GameManager.instance.removeMapHighlights ();
-		if (this.attackingPhase) {
-            this.startAttackPhase();
-		} else if (this.movingPhase) {
-            this.startMovePhase();
+        Player activePlayer = GameManager.instance.players[GameManager.instance.currentPlayerIndex];
+        if (activePlayer.attackingPhase) {
+            activePlayer.startAttackPhase();
+		} else if (activePlayer.movingPhase) {
+            activePlayer.startMovePhase();
 		}
 		mouseOverPlayer = false;
 		this.getTile().OnMouseExit ();
@@ -154,7 +157,7 @@ public class Player : MonoBehaviour {
 
 	public void updatePositionQueue () {
 		if (Vector3.Distance (positionQueue [0], transform.position) > 0.1f) {
-			transform.position += (positionQueue [0] - transform.position).normalized * moveSpeed * Time.deltaTime;
+			transform.position += (positionQueue [0] - transform.position).normalized * this.moveSpeed;
 			
 			if (Vector3.Distance (positionQueue [0], transform.position) <= 0.1f) {
 				transform.position = positionQueue [0];
