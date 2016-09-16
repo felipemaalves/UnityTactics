@@ -23,4 +23,13 @@ public class TilePath {
 		listOfTiles.Add (t);
 		lastTile = t;
 	}
+
+    public void removeTile()
+    {
+        if(listOfTiles.Count > 0)
+        {
+            costOfPath -= listOfTiles.ElementAt<Tile>(0).movementCost;
+            listOfTiles.RemoveAt(0);
+        }
+    }
 }

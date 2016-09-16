@@ -42,4 +42,14 @@ public class TilePathFinder : MonoBehaviour {
 		
 		return closed;
 	}
+
+    public static TilePath FindTilePath (Tile originTile, Tile destinationTile)
+    {
+        TilePath tilePath = new TilePath();
+        foreach (Tile t in FindPath(originTile, destinationTile))
+        {
+            tilePath.addTile(t);
+        }
+        return tilePath;
+    }
 }

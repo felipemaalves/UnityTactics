@@ -18,7 +18,7 @@ public class UserPlayer : Player {
 			GameManager.instance.removeMapHighlights();
 			highlighted = false;
 		} else if(movingPhase && !highlighted){
-			GameManager.instance.highlightTilesAt(gridPosition,new Color(0.33f,0.835f,1.0f),movePoints);
+			GameManager.instance.highlightTilesAt(gridPosition,GameManager.targetMoveColor, movePoints);
 			highlighted = true;
 		}
 
