@@ -11,8 +11,8 @@ public class Player : MonoBehaviour {
 	public bool attackingPhase = false;
 	public bool movingPhase = false;
 	public bool highlighted = false;
-	public bool marked = false;
 
+    public string team = "Team Default";
 	public string playerName = "Default";
 	public int HP = 25;
 	public int MaxHP = 25;
@@ -29,10 +29,14 @@ public class Player : MonoBehaviour {
 	public int startingActionPoints = 2;
 	public int startingMovePoints = 5;
 
+    private Attribute attributes;
+
 	//movement animation
 	public List<Vector3> positionQueue = new List<Vector3>();
 
-	bool mouseOverPlayer = false;
+    public TilePath tileQueue = new TilePath();
+
+	private bool mouseOverPlayer = false;
 
 	void Awake () {
 		moveDestination = transform.position;
@@ -317,6 +321,46 @@ public class Player : MonoBehaviour {
             }
         }
         movePlayer(destTile);
+    }
+
+    public int getStr()
+    {
+        return this.attributes.getStrength();
+    }
+
+    public int getAgi()
+    {
+        return this.attributes.getAgility();
+    }
+
+    public int getDex()
+    {
+        return this.attributes.getDexterity();
+    }
+
+    public int getInt()
+    {
+        return this.attributes.getInteligence();
+    }
+
+    public int getWis()
+    {
+        return this.attributes.getWisdom();
+    }
+
+    public int getVit()
+    {
+        return this.attributes.getVitality();
+    }
+
+    public int getPer()
+    {
+        return this.attributes.getPerception();
+    }
+
+    public Attribute getAttributesPure()
+    {
+        return attributes;
     }
 
 }
