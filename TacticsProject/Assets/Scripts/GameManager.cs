@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour {
 
 					bool hit = Random.Range(0.0f,1.0f) <= players[currentPlayerIndex].attackChance;
 					if (hit) {
-						int amountOfDamage = players[currentPlayerIndex].damageBase + Random.Range(1,players[currentPlayerIndex].damageRollSides);
+						int amountOfDamage = players[currentPlayerIndex].damageBase + Random.Range(1,players[currentPlayerIndex].rollSides);
 						amountOfDamage = Mathf.FloorToInt(amountOfDamage * (target.damageReduction + 1));
 						Debug.Log(players[currentPlayerIndex].playerName + " succefully hit " + target.playerName + " for " + amountOfDamage + " damage.");
 						players[currentPlayerIndex].doDamageTo(target);
@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour {
 		aiplayer.startingActionPoints = 1;
 		aiplayer.startingMovePoints = 4;
 		aiplayer.damageBase = 12;
-		aiplayer.damageRollSides = 12;
+		aiplayer.rollSides = 12;
 		aiplayer.MaxHP = 125;
 		players.Add (aiplayer);
 	}

@@ -36,7 +36,7 @@ public class UserPlayer : Player {
 		GUI.TextArea (playerAttributesRect, 
 		    "Name: " + playerName + "\n" +
 			"HP: " + HP + "/" + MaxHP + "\n" +
-			"Damage: " + damageBase + " + 1d" + damageRollSides + "\n" +
+			"Damage: " + damageBase + " + 1d" + rollSides + "\n" +
 			"Precision: " + attackChance * 100 + "%\n" +
             "Damage Reduction: " + damageReduction * 100 + "%\n" +
             "Range: " + attackRange

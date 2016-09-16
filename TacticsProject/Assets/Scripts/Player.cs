@@ -20,7 +20,7 @@ public class Player : MonoBehaviour {
 	public float attackChance = 0.75f;
 	public float damageReduction = 0.15f;
 	public int damageBase = 5;
-	public int damageRollSides = 6;
+	public int rollSides = 6;
 
 	public int actionPoints;
 	public int movePoints;
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour {
 	void Start () {
 		this.HP = this.MaxHP;
         this.attributes = new Attribute();
-        this.moveSpeed = 0.25f;
+        this.moveSpeed = 0.5f;
 	}
 	
 	// Update is called once per frame
@@ -93,7 +93,7 @@ public class Player : MonoBehaviour {
 			GUI.TextArea (playerAttributesRect, 
 			           "Name: " + playerName + "\n" +
 				"HP: " + HP + "/" + MaxHP + "\n" +
-				"Damage: " + damageBase + " + 1d" + damageRollSides + "\n" +
+				"Damage: " + damageBase + " + 1d" + rollSides + "\n" +
 				"Precision: " + attackChance * 100 + "%\n" +
 				"Damage Reduction: " + damageReduction * 100 + "%\n" +
 			    "Range: " + attackRange
@@ -185,9 +185,14 @@ public class Player : MonoBehaviour {
 
     public void doDamageTo(Player target)
     {
-        int amountOfDamage = this.damageBase + Random.Range(1, this.damageRollSides);
+        int amountOfDamage = this.damageBase + this.rollDice();
         Damage damage = new Damage(amountOfDamage, DamageType.CONTUSION);
         Damage.doDamageTo(target, damage);
+    }
+
+    public int rollDice()
+    {
+        return Random.Range(1, this.rollSides);
     }
 
     public void attackWithEquipedWeapon(Tile destTile){
@@ -362,6 +367,11 @@ public class Player : MonoBehaviour {
     }
 
     public Attribute getAttributesPure()
+    {
+        return attributes;
+    }
+
+    public Attribute getAttributes()
     {
         return attributes;
     }

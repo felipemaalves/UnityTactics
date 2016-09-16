@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\AIPlayer.cs" />
     <Compile Include="Assets\Scripts\Attribute.cs" />
+    <Compile Include="Assets\Scripts\CombatSystem.cs" />
     <Compile Include="Assets\Scripts\Damage.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
