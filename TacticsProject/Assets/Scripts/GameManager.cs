@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour {
 		generatePlayers ();
         Debug.Log("Ajusting camera...");
 		adjustCamera ();
+        Debug.Log("Load finnished");
 	}
 	
 	// Update is called once per frame
@@ -61,13 +62,56 @@ public class GameManager : MonoBehaviour {
 
 	void OnGUI () {
 		if (players [currentPlayerIndex].HP > 0) {
-			players [currentPlayerIndex].TurnOnGUI ();
-		} else {
-			nextTurn();
+            TurnOnGUI ();
 		}
 	}
 
-	public void nextTurn () {
+     void TurnOnGUI()
+    {
+        float buttonHeight = 50;
+        float buttonWidth = 150;
+        Player currentPlayer = players[currentPlayerIndex];
+
+        if (currentPlayer.GetType() != typeof(AIPlayer))
+        {
+            Rect textRect = new Rect(0, Screen.height - buttonHeight * 4, buttonWidth, buttonHeight);
+            GUI.TextArea(textRect, "Action Points: " + currentPlayer.actionPoints + "\nMove Points: " + currentPlayer.movePoints);
+
+            Rect playerAttributesRect = new Rect(0, 0, buttonWidth, buttonHeight * 2);
+            GUI.TextArea(playerAttributesRect,
+                "Name: " + currentPlayer.playerName + "\n" +
+                "HP: " + currentPlayer.HP + "/" + currentPlayer.MaxHP + "\n" +
+                "Damage: " + currentPlayer.damageBase + " + 1d" + currentPlayer.rollSides + "\n" +
+                "Precision: " + currentPlayer.attackChance * 100 + "%\n" +
+                "Damage Reduction: " + currentPlayer.damageReduction * 100 + "%\n" +
+                "Range: " + currentPlayer.attackRange
+            );
+
+            Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 3, buttonWidth, buttonHeight);
+
+            if (GUI.Button(buttonRect, " Move ") || Input.GetButtonDown("Move"))
+            {
+                currentPlayer.startMovePhase();
+            }
+
+            buttonRect = new Rect(0, Screen.height - buttonHeight * 2, buttonWidth, buttonHeight);
+
+            if (GUI.Button(buttonRect, " Attack ") || Input.GetButtonDown("Attack"))
+            {
+                currentPlayer.startAttackPhase();
+            }
+
+            buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);
+
+            if (GUI.Button(buttonRect, " End Turn ") || Input.GetButtonDown("End Turn"))
+            {
+                nextTurn();
+                Input.ResetInputAxes();
+            }
+        }        
+    }
+
+    public void nextTurn () {
 		players [currentPlayerIndex].endPlayerTurn ();
 
 		if (currentPlayerIndex + 1 < players.Count) {

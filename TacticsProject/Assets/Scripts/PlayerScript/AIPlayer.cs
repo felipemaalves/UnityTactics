@@ -130,10 +130,6 @@ public class AIPlayer : Player {
 		return highLightedTiles;
 	}
 
-	public override void TurnOnGUI () {
-		base.TurnOnGUI ();
-	}
-
 	public override void endPlayerTurn () {
 		iddleCounter = 0;
 		finnishActing = false;

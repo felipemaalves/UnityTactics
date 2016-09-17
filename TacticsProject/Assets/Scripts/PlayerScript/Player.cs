@@ -5,9 +5,6 @@ using System.Collections.Generic;
 public class Player : MonoBehaviour {
 	public Vector2 gridPosition = Vector2.zero;
 
-	public Vector3 moveDestination;
-	public float moveSpeed = 0.1f;
-
 	public bool attackingPhase = false;
 	public bool movingPhase = false;
 	public bool highlighted = false;
@@ -33,20 +30,21 @@ public class Player : MonoBehaviour {
 
 	//movement animation
 	public List<Vector3> positionQueue = new List<Vector3>();
+    public float moveSpeed = 0.5f;
 
     public TilePath tileQueue = new TilePath();
 
 	private bool mouseOverPlayer = false;
 
-	void Awake () {
-		moveDestination = transform.position;
-		RefreshPoints ();
-	}
+    void Awake()
+    {
+        RefreshPoints();
+        this.attributes = new Attribute();
+    }
 
 	// Use this for initialization
 	void Start () {
 		this.HP = this.MaxHP;
-        this.attributes = new Attribute();
         this.moveSpeed = 0.5f;
 	}
 	
@@ -111,10 +109,6 @@ public class Player : MonoBehaviour {
 		// show HP END
 	}
 
-	public virtual void TurnOnGUI () {
-		
-	}
-
 	public void startMovePhase(){
 		GameManager.instance.removeMapHighlights();
 		movingPhase = true;
@@ -131,7 +125,7 @@ public class Player : MonoBehaviour {
 
 	public virtual void endPlayerTurn(){
 		GameManager.instance.removeMapHighlights();
-		RefreshPoints();
+        RefreshPoints();
 		positionQueue.Clear();
 		movingPhase = false;
 		attackingPhase = false;

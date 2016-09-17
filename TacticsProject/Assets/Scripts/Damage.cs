@@ -38,19 +38,32 @@ public class Damage {
 	public Damage(int dmg, DamageType dmgType){
 		damage = dmg;
 		damageType = dmgType;
+        damageElement = Element.NEUTRAL;
 	}
+
+    public Damage(int dmg, DamageType dmgType, Element dmgEle)
+    {
+        damage = dmg;
+        damageType = dmgType;
+        damageElement = dmgEle;
+    }
 
 	public static void doDamageTo(Player target, Damage dmg){
-		doDamageTo (target, dmg.damage, dmg.damageType);
+		doDamageTo (target, dmg.damage, dmg.damageType, dmg.damageElement);
 	}
 
-	public static void doDamageTo(Player target, int dmg, DamageType dmgType ){
+    public static void doDamageTo(Player target, Damage dmg, int bonus)
+    {
+        doDamageTo(target, dmg.damage + bonus, dmg.damageType, dmg.damageElement);
+    }
+
+    public static void doDamageTo(Player target, int dmg, DamageType dmgType, Element dmgEle ){
 		dmg = Mathf.FloorToInt (dmg * (1 + target.damageReduction));
 		target.HP -= dmg;
 
 		displayDamage (target, dmg);
 	}
 
-	static void displayDamage(Player target, int dmg){
+	public static void displayDamage(Player target, int dmg){
 	}
 }

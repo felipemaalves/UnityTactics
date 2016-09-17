@@ -1,6 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum CombatType
+{
+    IMPACT,
+    SLICE,
+    SPELL,
+    MIND
+}
+
 public class CombatSystem {
 
 	public static int ImpactAttackPower(Player player)
@@ -87,9 +95,52 @@ public class CombatSystem {
             return false;
     }
 
-    public static float HitChance(int attackPower, int defensePower)
+    public static float HitChance(Player attacker, Player defender, CombatType type)
     {
-        // blabla logic
-        return 1.0f;
+        float att;
+        float def;
+
+        float percent = 0.0f;
+
+        switch (type)
+        {
+            case CombatType.IMPACT:
+                att = (float)ImpactAttackPower(attacker);
+                def = (float)ImpactDefensePower(defender);
+                break;
+            case CombatType.SLICE:
+                att = (float)SliceAttackPower(attacker);
+                def = (float)SliceDefensePower(defender);
+                break;
+            case CombatType.SPELL:
+                att = (float)SpellAttackPower(attacker);
+                def = (float)SpellDefensePower(defender);
+                break;
+            case CombatType.MIND:
+                att = (float)MindAttackPower(attacker);
+                def = (float)MindDefensePower(defender);
+                break;
+            default:
+                att = 0.0f;
+                def = 0.0f;
+                break;
+        }
+
+        if (att + 1 > def + defender.rollSides)
+            percent = 1.0f;
+        else if (att + attacker.rollSides < def + 1)
+            percent = 0.0f;
+        else
+        {
+            int hits = 0;
+            int total = attacker.rollSides * defender.rollSides;
+            for (int i = 1; i <= attacker.rollSides; i++)
+                for(int j = 1; j <= defender.rollSides; j++)
+                    if (att + i > def + j)
+                        hits++;
+            percent = (float)hits / total;
+        }
+
+        return percent;
     }
 }

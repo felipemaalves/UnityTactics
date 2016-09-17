@@ -66,17 +66,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\AIPlayer.cs" />
     <Compile Include="Assets\Scripts\Attribute.cs" />
     <Compile Include="Assets\Scripts\CombatSystem.cs" />
     <Compile Include="Assets\Scripts\Damage.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\PlayerScript\AIPlayer.cs" />
+    <Compile Include="Assets\Scripts\PlayerScript\Player.cs" />
+    <Compile Include="Assets\Scripts\PlayerScript\UserPlayer.cs" />
+    <Compile Include="Assets\Scripts\SkillScript\Skill.cs" />
+    <Compile Include="Assets\Scripts\SkillScript\SkillTemplate.cs" />
     <Compile Include="Assets\Scripts\Tile.cs" />
     <Compile Include="Assets\Scripts\TileHighligth.cs" />
     <Compile Include="Assets\Scripts\TilePath.cs" />
     <Compile Include="Assets\Scripts\TilePathFinder.cs" />
-    <Compile Include="Assets\Scripts\UserPlayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
