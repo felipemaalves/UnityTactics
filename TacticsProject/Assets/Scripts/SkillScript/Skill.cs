@@ -12,6 +12,8 @@ public enum SplashType
 
 public class Skill : MonoBehaviour {
 
+    protected string skillName = "Default";
+
     protected Element element;
     protected DamageType dmgType;
     protected CombatType combatType;
@@ -64,6 +66,11 @@ public class Skill : MonoBehaviour {
     public void tooltip()
     {
         // TODO
+    }
+
+    public string getName()
+    {
+        return skillName;
     }
 
     public Element getElement()

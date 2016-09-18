@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum Difficulty
 {
@@ -24,6 +25,8 @@ public class GameManager : MonoBehaviour {
 	public GameObject AIPlayerPreFab;
 
 	public Difficulty difficulty = Difficulty.EASY;
+
+    private bool skillUI = false;
 
 	// MapManager Variables
 	public int mapSizeX = 22;
@@ -74,7 +77,7 @@ public class GameManager : MonoBehaviour {
 
         if (currentPlayer.GetType() != typeof(AIPlayer))
         {
-            Rect textRect = new Rect(0, Screen.height - buttonHeight * 4, buttonWidth, buttonHeight);
+            Rect textRect = new Rect(0, Screen.height - buttonHeight * 5, buttonWidth, buttonHeight);
             GUI.TextArea(textRect, "Action Points: " + currentPlayer.actionPoints + "\nMove Points: " + currentPlayer.movePoints);
 
             Rect playerAttributesRect = new Rect(0, 0, buttonWidth, buttonHeight * 2);
@@ -87,24 +90,51 @@ public class GameManager : MonoBehaviour {
                 "Range: " + currentPlayer.attackRange
             );
 
-            Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 3, buttonWidth, buttonHeight);
+            Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 4, buttonWidth, buttonHeight);
 
             if (GUI.Button(buttonRect, " Move ") || Input.GetButtonDown("Move"))
             {
+                skillUI = false;
                 currentPlayer.startMovePhase();
             }
+
+            buttonRect = new Rect(0, Screen.height - buttonHeight * 3, buttonWidth, buttonHeight);
+
+            if (GUI.Button(buttonRect, " Skill ") || Input.GetButtonDown("Skill"))
+            {
+                skillUI = true;       
+            }
+
+            if (skillUI)
+            {
+                GUILayout.BeginArea(new Rect(Screen.width - buttonWidth, Screen.height - (buttonHeight / 2) * currentPlayer.getSkillList().Count, buttonWidth, buttonHeight / 2));
+                GUILayout.BeginVertical();
+                for (int i = 0; i < currentPlayer.getSkillList().Count; i++)
+                {
+                    if (GUILayout.Button(currentPlayer.getSkillList().ElementAt(i).getName()))
+                    {
+                        Debug.Log("pressed Item " + i);
+                    }
+                }
+                GUILayout.EndVertical();
+                GUILayout.EndArea();
+            }
+            
 
             buttonRect = new Rect(0, Screen.height - buttonHeight * 2, buttonWidth, buttonHeight);
 
             if (GUI.Button(buttonRect, " Attack ") || Input.GetButtonDown("Attack"))
             {
+                skillUI = false;
                 currentPlayer.startAttackPhase();
             }
 
             buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);
 
-            if (GUI.Button(buttonRect, " End Turn ") || Input.GetButtonDown("End Turn"))
+            if ((GUI.Button(buttonRect, " End Turn ") || Input.GetButtonDown("End Turn"))
+                && currentPlayer.positionQueue.Count == 0)
             {
+                skillUI = false;
                 nextTurn();
                 Input.ResetInputAxes();
             }

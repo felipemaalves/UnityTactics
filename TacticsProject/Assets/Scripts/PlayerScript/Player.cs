@@ -32,14 +32,16 @@ public class Player : MonoBehaviour {
 	public List<Vector3> positionQueue = new List<Vector3>();
     public float moveSpeed = 0.5f;
 
-    public TilePath tileQueue = new TilePath();
-
 	private bool mouseOverPlayer = false;
+
+    protected List<Skill> skills = new List<Skill>();
 
     void Awake()
     {
         RefreshPoints();
         this.attributes = new Attribute();
+        SkillTemplate template = new SkillTemplate();
+        skills.Add(template);
     }
 
 	// Use this for initialization
@@ -190,6 +192,16 @@ public class Player : MonoBehaviour {
     }
 
     public void attackWithEquipedWeapon(Tile destTile){
+    }
+
+    public List<Skill> getSkillList()
+    {
+        return this.skills;
+    }
+
+    public void useSkill(int index)
+    {
+
     }
 
     public Tile getTile()
