@@ -292,6 +292,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 		)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (0, 0);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player1";
 		players.Add (player);
 
@@ -301,6 +302,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (4, 0);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player2";
 		player.attackRange = 4;
 		players.Add (player);
@@ -311,6 +313,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (8, 0);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player3";
 		player.attackRange = 4;
 		players.Add (player);
@@ -321,6 +324,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (mapSizeX-1, 0);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player4";
 		players.Add (player);
 
@@ -330,6 +334,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (mapSizeX-1, mapSizeY-1);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI1";
 		players.Add (aiplayer);
 
@@ -339,6 +344,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (mapSizeX-1 -4, mapSizeY-1);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI2";
 		aiplayer.attackRange = 7;
 		aiplayer.startingMovePoints = 4;
@@ -351,6 +357,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (mapSizeX-1 -8, mapSizeY-1);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI3";
 		players.Add (aiplayer);
 
@@ -360,6 +367,7 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (0, mapSizeY-1);
+        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI4";
 		aiplayer.startingActionPoints = 1;
 		aiplayer.startingMovePoints = 4;
