@@ -26,8 +26,6 @@ public class GameManager : MonoBehaviour {
 
 	public Difficulty difficulty = Difficulty.EASY;
 
-    private bool skillUI = false;
-
 	// MapManager Variables
 	public int mapSizeX = 22;
 	public int mapSizeY = 22;
@@ -77,8 +75,11 @@ public class GameManager : MonoBehaviour {
 
         if (currentPlayer.GetType() != typeof(AIPlayer))
         {
-            Rect textRect = new Rect(0, Screen.height - buttonHeight * 5, buttonWidth, buttonHeight);
-            GUI.TextArea(textRect, "Action Points: " + currentPlayer.actionPoints + "\nMove Points: " + currentPlayer.movePoints);
+            int numOfButtons = 4;
+            Rect textRect = new Rect(0, Screen.height - buttonHeight * (numOfButtons + 1), buttonWidth, buttonHeight);
+            GUI.TextArea(textRect, 
+                "Action Points: " + currentPlayer.actionPoints + 
+                "\nMove Points: " + currentPlayer.movePoints);
 
             Rect playerAttributesRect = new Rect(0, 0, buttonWidth, buttonHeight * 2);
             GUI.TextArea(playerAttributesRect,
@@ -90,22 +91,21 @@ public class GameManager : MonoBehaviour {
                 "Range: " + currentPlayer.attackRange
             );
 
-            Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 4, buttonWidth, buttonHeight);
+            Rect buttonRect = new Rect(0, Screen.height - buttonHeight * numOfButtons, buttonWidth, buttonHeight);
 
             if (GUI.Button(buttonRect, " Move ") || Input.GetButtonDown("Move"))
             {
-                skillUI = false;
                 currentPlayer.startMovePhase();
             }
 
-            buttonRect = new Rect(0, Screen.height - buttonHeight * 3, buttonWidth, buttonHeight);
+            buttonRect = new Rect(0, Screen.height - buttonHeight * (numOfButtons -1), buttonWidth, buttonHeight);
 
             if (GUI.Button(buttonRect, " Skill ") || Input.GetButtonDown("Skill"))
             {
-                skillUI = true;       
+                currentPlayer.startSkillPhase();
             }
 
-            if (skillUI)
+            if (currentPlayer.skillPhase)
             {
                 GUILayout.BeginArea(new Rect(Screen.width - buttonWidth, Screen.height - (buttonHeight / 2) * currentPlayer.getSkillList().Count, buttonWidth, buttonHeight / 2));
                 GUILayout.BeginVertical();
@@ -114,27 +114,25 @@ public class GameManager : MonoBehaviour {
                     if (GUILayout.Button(currentPlayer.getSkillList().ElementAt(i).getName()))
                     {
                         Debug.Log("pressed Item " + i);
+                        currentPlayer.selectSkill(i);
                     }
                 }
                 GUILayout.EndVertical();
                 GUILayout.EndArea();
             }
             
-
-            buttonRect = new Rect(0, Screen.height - buttonHeight * 2, buttonWidth, buttonHeight);
+            buttonRect = new Rect(0, Screen.height - buttonHeight * (numOfButtons -2), buttonWidth, buttonHeight);
 
             if (GUI.Button(buttonRect, " Attack ") || Input.GetButtonDown("Attack"))
             {
-                skillUI = false;
                 currentPlayer.startAttackPhase();
             }
 
-            buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);
+            buttonRect = new Rect(0, Screen.height - buttonHeight * (numOfButtons -3), buttonWidth, buttonHeight);
 
             if ((GUI.Button(buttonRect, " End Turn ") || Input.GetButtonDown("End Turn"))
                 && currentPlayer.positionQueue.Count == 0)
             {
-                skillUI = false;
                 nextTurn();
                 Input.ResetInputAxes();
             }
@@ -153,7 +151,7 @@ public class GameManager : MonoBehaviour {
 
 	public void highlightTilesAt( Vector2 originLocation, Color highlightColor, int range){
 		List<Tile> highlightedTiles;
-		if (players [currentPlayerIndex].attackingPhase) {
+		if (players [currentPlayerIndex].attackingPhase || players [currentPlayerIndex].skillPhase) {
 			highlightedTiles =  TileHighligth.FindAttackHighlight (map [(int)originLocation.x] [(int)originLocation.y], range);
 		} else {
 			highlightedTiles =  TileHighligth.FindHighlight (map [(int)originLocation.x] [(int)originLocation.y], range);
@@ -292,7 +290,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 		)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (0, 0);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player1";
 		players.Add (player);
 
@@ -302,7 +299,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (4, 0);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player2";
 		player.attackRange = 4;
 		players.Add (player);
@@ -313,7 +309,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (8, 0);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player3";
 		player.attackRange = 4;
 		players.Add (player);
@@ -324,7 +319,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<UserPlayer>();
 		player.gridPosition = new Vector2 (mapSizeX-1, 0);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		player.playerName = "Player4";
 		players.Add (player);
 
@@ -334,7 +328,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (mapSizeX-1, mapSizeY-1);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI1";
 		players.Add (aiplayer);
 
@@ -344,7 +337,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (mapSizeX-1 -4, mapSizeY-1);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI2";
 		aiplayer.attackRange = 7;
 		aiplayer.startingMovePoints = 4;
@@ -357,7 +349,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (mapSizeX-1 -8, mapSizeY-1);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI3";
 		players.Add (aiplayer);
 
@@ -367,7 +358,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.Euler(new Vector3())
 			)).GetComponent<AIPlayer>();
 		aiplayer.gridPosition = new Vector2 (0, mapSizeY-1);
-        getTileByGridPosition(player.gridPosition).impassable = true;
 		aiplayer.playerName = "PlayerAI4";
 		aiplayer.startingActionPoints = 1;
 		aiplayer.startingMovePoints = 4;

@@ -1,13 +1,14 @@
 fileFormatVersion: 2
 guid: f6f67cde26db7364bbc94ed9db5fcebd
-timeCreated: 1473797603
-licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - TilePreFab: {instanceID: 0}
-  - UserPlayerPreFab: {instanceID: 0}
-  - AIPlayerPreFab: {instanceID: 0}
+  - TilePreFab: {fileID: 171766, guid: 5c405229c66670d4cb5f307776981a78, type: 3}
+  - UserPlayerPreFab: {fileID: 149406, guid: 485f9ef14b6602747b5ff603158d0134, type: 3}
+  - AIPlayerPreFab: {fileID: 107062, guid: 6d067d8625c51834fa7487723fa11791, type: 3}
+  - MagmaBallPreFab: {fileID: 1000013406456668, guid: adc572a1fffdbe14db78fabe131a1cb7,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -13,7 +13,7 @@ public class TileHighligth {
 	}
 
 	public static List<Tile> FindHighlight (Tile originTile, int movementPoints, bool targetSelf){
-		return FindHighlight (originTile, movementPoints, false, movementPoints+1);
+        return FindHighlight(originTile, movementPoints, targetSelf, movementPoints + 1);
 	}
 
 	public static List<Tile> FindHighlight (Tile originTile, int movementPoints, bool targetSelf, int ignoreImpassableAfter) {

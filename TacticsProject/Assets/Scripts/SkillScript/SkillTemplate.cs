@@ -17,6 +17,11 @@ public class SkillTemplate : Skill {
         this.splash = 0;
     }
 
+    void Awake()
+    {
+      
+    }
+
 	// Use this for initialization
 	void Start () {
         

@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Player : MonoBehaviour {
 	public Vector2 gridPosition = Vector2.zero;
 
 	public bool attackingPhase = false;
 	public bool movingPhase = false;
+    public bool skillPhase = false;
 	public bool highlighted = false;
 
     public string team = "Team Default";
@@ -34,20 +36,23 @@ public class Player : MonoBehaviour {
 
 	private bool mouseOverPlayer = false;
 
-    protected List<Skill> skills = new List<Skill>();
+    public List<Skill> skills = new List<Skill>();
+    public Skill selectedSkill;
+    public int selectedSkillIndex;
 
     void Awake()
     {
         RefreshPoints();
         this.attributes = new Attribute();
-        SkillTemplate template = new SkillTemplate();
+        SkillTemplate template = gameObject.AddComponent<SkillTemplate>();
         skills.Add(template);
     }
 
 	// Use this for initialization
 	void Start () {
 		this.HP = this.MaxHP;
-        this.moveSpeed = 0.5f;
+        this.moveSpeed = 0.2f;
+        this.setPlayerPositionImpassable();
 	}
 	
 	// Update is called once per frame
@@ -75,7 +80,9 @@ public class Player : MonoBehaviour {
             activePlayer.startAttackPhase();
 		} else if (activePlayer.movingPhase) {
             activePlayer.startMovePhase();
-		}
+        } else if (activePlayer.skillPhase) {
+            activePlayer.selectSkill(activePlayer.selectedSkillIndex);
+        }
 		mouseOverPlayer = false;
 		this.getTile().OnMouseExit ();
 	}
@@ -115,15 +122,31 @@ public class Player : MonoBehaviour {
 		GameManager.instance.removeMapHighlights();
 		movingPhase = true;
 		attackingPhase = false;
-		GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetMoveColor, GameManager.instance.players [GameManager.instance.currentPlayerIndex].movePoints);
+        skillPhase = false;
+        GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetMoveColor, this.movePoints);
 	}
 
 	public void startAttackPhase(){
 		GameManager.instance.removeMapHighlights();
 		movingPhase = false;
 		attackingPhase = true;
-		GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetAttackColor, GameManager.instance.players [GameManager.instance.currentPlayerIndex].attackRange);
+        skillPhase = false;
+		GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetAttackColor, this.attackRange);
 	}
+
+    public void startSkillPhase(){
+        GameManager.instance.removeMapHighlights();
+        movingPhase = false;
+        attackingPhase = false;
+        skillPhase = true;
+    }
+
+    public void selectSkill(int index) {
+        Skill skill = this.getSkillList().ElementAt(index);
+        this.selectedSkill = skill;
+        this.selectedSkillIndex = index;
+        GameManager.instance.highlightTilesAt(gridPosition, GameManager.targetSplashColor, skill.getRange());
+    }
 
 	public virtual void endPlayerTurn(){
 		GameManager.instance.removeMapHighlights();
